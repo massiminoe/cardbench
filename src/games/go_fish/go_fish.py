@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 from collections import Counter
 import random
+import logging
 
 from src.games.common import Deck, DiscreteGame, BinaryGameResult
 
@@ -24,7 +25,7 @@ class GoFish(DiscreteGame):
 
     def __init__(self, agent_ids: list[int], log_events: bool = False):
 
-        super().__init__(agent_ids, log_events)
+        super().__init__(agent_ids=agent_ids, game_name="go_fish", log_events=log_events)
         if self.num_agents != 2:
             raise NotImplementedError("Only 2-player Go Fish is supported")
 
@@ -126,6 +127,7 @@ class GoFish(DiscreteGame):
         assert self.done, "Game must be done to get a result"
         agent_0_books = len(self.books[0])
         agent_1_books = len(self.books[1])
+        logging.info(f"Agent 0 books: {agent_0_books}, Agent 1 books: {agent_1_books}")
         if agent_0_books > agent_1_books:
             return BinaryGameResult(winner=0, loser=1)
         elif agent_0_books < agent_1_books:

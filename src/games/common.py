@@ -1,6 +1,7 @@
 import random
 from dataclasses import dataclass
 from typing import Any
+import logging
 
 RANKS = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"]
 SUITS = ["C", "D", "H", "S"]
@@ -52,11 +53,11 @@ class EventLog:
     def push(self, event: str):
         self.events.append(event)
         if self.log_events:
-            print(event)
+            logging.info(event)
 
     def get_events_from(self, idx: int) -> list[str]:
         return self.events[idx:]
-    
+
     def __len__(self):
         return len(self.events)
 
@@ -66,13 +67,22 @@ class DiscreteGame:
     Game with a discrete action space.
     """
 
-    def __init__(self, agent_ids: list[int], log_events: bool = False):
+    def __init__(self, agent_ids: list[int], game_name: str, log_events: bool = False):
         self.agent_ids = agent_ids
         self.num_agents = len(agent_ids)
         self.current_agent: int = None
         self.event_log: EventLog = EventLog(log_events)
         self.done = False
+        self.game_name = game_name
+        self.rules = self.load_rules()
         # TODO - random state initialization
+
+    def load_rules(self) -> str:
+        """
+        Load the rules of the game from a file.
+        """
+        with open(f"src/games/{self.game_name}/rules.md", "r") as f:
+            return f.read()
 
     def init_game(self):
         pass

@@ -1,0 +1,9 @@
+## Info
+**Events since last turn**
+{events}
+
+**Game state**
+{state}
+
+**Actions**
+{actions}
