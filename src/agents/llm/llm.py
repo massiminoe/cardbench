@@ -3,7 +3,7 @@ from typing import Any
 import os
 
 from dotenv import load_dotenv
-from openai import OpenAI
+from langfuse.openai import OpenAI
 
 from src.agents.common import ActionResponseFormat, DiscreteAgent
 
@@ -61,7 +61,6 @@ class LLMAgent(DiscreteAgent):
         response_message = response.choices[0].message
         self.messages.append(response_message)
         raw_content = response_message.content
-        print(raw_content)
         cleaned_content = self._clean_json(raw_content)
         return ActionResponseFormat(**json.loads(cleaned_content))
 
