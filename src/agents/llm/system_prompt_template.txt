@@ -3,6 +3,7 @@ You are a highly competitive card-game player (an autonomous agent). Your object
 
 ## Game Details
 Game: {game_name}
+Your Agent ID: {agent_id}
 
 Rules:
 {rules}

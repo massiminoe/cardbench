@@ -17,15 +17,20 @@ CLIENT = OpenAI(
 MISTRAL_SMALL_FREE = "mistralai/mistral-small-3.2-24b-instruct:free"
 MISTRAL_SMALL = "mistralai/mistral-small-3.2-24b-instruct"
 QWEN3_14B_FREE = "qwen/qwen3-14b:free"
+OPENAI_GPT_4_1_MINI = "openai/gpt-4.1-mini"
+
+DEFAULT_MODEL = OPENAI_GPT_4_1_MINI
 
 
 class LLMAgent(DiscreteAgent):
 
-    def __init__(self, agent_id: int, game_name: str, rules: str, model_id: str = MISTRAL_SMALL):
+    def __init__(self, agent_id: int, game_name: str, rules: str, model_id: str = DEFAULT_MODEL):
         super().__init__(agent_id, game_name, rules)
         with open(f"src/agents/llm/system_prompt_template.txt", "r") as f:
             system_prompt_template = f.read()
-            self.system_prompt = system_prompt_template.format(game_name=game_name, rules=rules)
+            self.system_prompt = system_prompt_template.format(
+                game_name=game_name, rules=rules, agent_id=agent_id
+            )
         with open(f"src/agents/llm/user_prompt_template.txt", "r") as f:
             self.user_prompt_template = f.read()
         self.model_id = model_id
@@ -36,8 +41,9 @@ class LLMAgent(DiscreteAgent):
 
     def build_user_prompt(self, new_events: list[str], state: dict, actions: list[Any]) -> str:
         actions_formatted = "\n".join([f"{i}: {action}" for i, action in enumerate(actions)])
+        events_formatted = "\n".join([f"{i}: {event}" for i, event in enumerate(new_events)])
         return self.user_prompt_template.format(
-            events=new_events, state=state, actions=actions_formatted
+            events=events_formatted, state=state, actions=actions_formatted
         )
 
     def _clean_json(self, content: str) -> str:
