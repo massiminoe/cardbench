@@ -5,6 +5,7 @@ import pytest
 from src.controller import run_discrete_game
 from src.games.go_fish.go_fish import GoFish
 from src.games.crazy_eights.crazy_eights import CrazyEights
+from src.games.gin_rummy.gin_rummy import GinRummy
 from src.agents.random import RandomAgent
 from src.games.common import BinaryGameResult
 
@@ -16,7 +17,7 @@ def fixed_seed():
 
 @pytest.mark.parametrize(
     "game_cls",
-    [GoFish, CrazyEights],
+    [GoFish, CrazyEights, GinRummy],
 )
 def test_run_game_random_agents(game_cls):
     """Ensure a full game can be played between two RandomAgents without error."""

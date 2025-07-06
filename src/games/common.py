@@ -16,6 +16,17 @@ class Card:
     def __str__(self):
         return f"{self.rank}{self.suit}"
 
+    def __repr__(self):
+        return f"'{self}'"
+
+    def __eq__(self, other):
+        if not isinstance(other, Card):
+            return NotImplemented
+        return self.rank == other.rank and self.suit == other.suit
+
+    def __hash__(self):
+        return hash((self.rank, self.suit))
+
 
 class Deck:
 
