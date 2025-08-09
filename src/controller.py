@@ -1,22 +1,28 @@
 import logging
 
-from src.games.common import DiscreteGame
+from src.games.common import DiscreteGame, GameResult
 from src.agents.common import DiscreteAgent
 
+
 def run_discrete_game(
-    game_cls: type[DiscreteGame], agents_cls: list[type[DiscreteAgent]], log_events: bool = False
-):
+    game_cls: type[DiscreteGame],
+    agents_0_cls: type[DiscreteAgent],
+    agents_1_cls: type[DiscreteAgent],
+    agent_0_kwargs: dict = {},
+    agent_1_kwargs: dict = {},
+    log_events: bool = False,
+) -> GameResult:
     """
-    Run a discrete game.
+    Run a discrete game between exactly two agents.
     """
     # Initialisation
-    agent_ids = [i for i in range(len(agents_cls))]
+    agent_ids = [0, 1]
     game = game_cls(agent_ids, log_events)
     game.init_game()
-    agents = [
-        agent_cls(agent_id, game.game_name, game.rules)
-        for agent_id, agent_cls in enumerate(agents_cls)
-    ]
+    agent_0 = agents_0_cls(0, game.game_name, game.rules, **agent_0_kwargs)
+    agent_1 = agents_1_cls(1, game.game_name, game.rules, **agent_1_kwargs)
+    agents = [agent_0, agent_1]
+
     # Keep track of which events have been pushed to the agent
     agent_event_idxs = {agent_id: 0 for agent_id in agent_ids}
     agent_error_counts = {agent_id: 0 for agent_id in agent_ids}
@@ -44,5 +50,12 @@ def run_discrete_game(
         game.step(action)
 
     # Game over
-    game_result = game.get_game_result()
+    agent_scores = game.get_agent_scores()
+    game_result = GameResult(
+        agent_0_name=agent_0.get_name(),
+        agent_1_name=agent_1.get_name(),
+        agent_0_score=agent_scores[0],
+        agent_1_score=agent_scores[1],
+        event_log=game.event_log.events,
+    )
     return game_result

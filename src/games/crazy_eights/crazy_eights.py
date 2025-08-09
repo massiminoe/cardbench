@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import random
 import logging
 
-from src.games.common import Card, Deck, DiscreteGame, BinaryGameResult, SUITS
+from src.games.common import Card, Deck, DiscreteGame, SUITS
 
 
 @dataclass
@@ -221,13 +221,13 @@ class CrazyEights(DiscreteGame):
     # Finishing the game
     # ---------------------------------------------------------------------
 
-    def get_game_result(self) -> BinaryGameResult:
+    def get_agent_scores(self) -> dict[int, float]:
         """Return win/loss or draw outcome.
 
         Handles victories (including stalemate winner) and draw outcomes.
         """
         assert self.done, "Game not finished yet"
-        assert self.num_agents == 2, "get_game_result currently supports 2 players only"
+        assert self.num_agents == 2, "get_agent_scores currently supports 2 players only"
 
         # Decide by fewest cards remaining - works for both stalemate and regular victory
         counts = {aid: len(self.hands[aid]) for aid in self.agent_ids}
@@ -236,11 +236,10 @@ class CrazyEights(DiscreteGame):
 
         if len(winners) == 1:
             winner = winners[0]
-            loser = 1 - winner
-            return BinaryGameResult(winner=winner, loser=loser)
+            return {0: 1.0, 1: 0.0} if winner == 0 else {0: 0.0, 1: 1.0}
 
         # Equal card counts – draw
-        return BinaryGameResult(draw=True)
+        return {0: 0.5, 1: 0.5}
 
     # ---------------------------------------------------------------------
     # Validation utility

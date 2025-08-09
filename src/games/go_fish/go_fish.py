@@ -3,9 +3,8 @@
 from dataclasses import dataclass
 from collections import Counter
 import random
-import logging
 
-from src.games.common import Deck, DiscreteGame, BinaryGameResult
+from src.games.common import Deck, DiscreteGame
 
 
 @dataclass
@@ -121,19 +120,18 @@ class GoFish(DiscreteGame):
             "books": self.books[agent_id],
         }
 
-    def get_game_result(self) -> BinaryGameResult:
+    def get_agent_scores(self) -> dict[int, float]:
         """Player with the most books wins."""
-        assert self.num_agents == 2, "Implementation for get_game_result only supports 2 players"
+        assert self.num_agents == 2, "Implementation for get_agent_scores only supports 2 players"
         assert self.done, "Game must be done to get a result"
         agent_0_books = len(self.books[0])
         agent_1_books = len(self.books[1])
-        logging.info(f"Agent 0 books: {agent_0_books}, Agent 1 books: {agent_1_books}")
         if agent_0_books > agent_1_books:
-            return BinaryGameResult(winner=0, loser=1)
+            return {0: 1.0, 1: 0.0}
         elif agent_0_books < agent_1_books:
-            return BinaryGameResult(winner=1, loser=0)
-        else:
-            return BinaryGameResult(draw=True)
+            return {0: 0.0, 1: 1.0}
+        else:  # Draw
+            return {0: 0.5, 1: 0.5}
 
     def validate_action(self, agent_id: int, action: Action) -> bool:
         """..."""

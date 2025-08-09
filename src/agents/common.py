@@ -17,3 +17,6 @@ class DiscreteAgent:
 
     def get_action(self, new_events: list[str], state: dict, actions: list[Any]) -> Any:
         pass
+
+    def get_name(self) -> str:
+        return f"{self.__class__.__name__}"

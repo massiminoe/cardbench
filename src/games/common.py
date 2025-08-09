@@ -2,6 +2,7 @@ import random
 from dataclasses import dataclass
 from typing import Any
 import logging
+from enum import Enum
 
 RANKS = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"]
 SUITS = ["C", "D", "H", "S"]
@@ -50,12 +51,21 @@ class Deck:
         return len(self.cards)
 
 
-@dataclass
-class BinaryGameResult:
+class Winner(Enum):
+    AGENT_0 = "agent_0"
+    AGENT_1 = "agent_1"
+    DRAW = "draw"
 
-    draw: bool = False
-    winner: int | None = None
-    loser: int | None = None
+
+@dataclass
+class GameResult:
+    """Detailed game result with agent names and scores, to be persisted."""
+
+    agent_0_name: str
+    agent_1_name: str
+    agent_0_score: float
+    agent_1_score: float
+    event_log: list[str]
 
 
 class EventLog:
@@ -114,8 +124,8 @@ class DiscreteGame:
         """..."""
         pass
 
-    def get_game_result(self) -> BinaryGameResult:
-        """..."""
+    def get_agent_scores(self) -> dict[int, float]:
+        """At the end of the game, get the scores for each agent."""
         pass
 
     def validate_action(self, action: Any) -> bool:

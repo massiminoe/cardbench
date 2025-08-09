@@ -59,6 +59,9 @@ class LLMAgent(DiscreteAgent):
         self.model_id = model_id
         self.init_messages()
 
+    def get_name(self) -> str:
+        return f"LLMAgent_{self.model_id}"
+
     def init_messages(self):
         self.messages = [{"role": "system", "content": self.system_prompt}]
 

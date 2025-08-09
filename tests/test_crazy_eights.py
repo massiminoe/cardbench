@@ -3,7 +3,7 @@ import random
 import pytest
 
 from src.games.crazy_eights.crazy_eights import CrazyEights, Action
-from src.games.common import Card, BinaryGameResult
+from src.games.common import Card
 
 
 @pytest.fixture(autouse=True)
@@ -84,10 +84,9 @@ def test_stalemate_winner_by_fewest_cards():
     game.step(action_pass)
 
     assert game.done
-    result = game.get_game_result()
-    assert isinstance(result, BinaryGameResult)
-    assert result.winner == 0
-    assert result.loser == 1
+    result = game.get_agent_scores()
+    assert isinstance(result, dict)
+    assert result[0] > result[1]
 
 
 def test_stalemate_draw_when_equal_cards():
@@ -106,5 +105,6 @@ def test_stalemate_draw_when_equal_cards():
     game.step(action_pass)
 
     assert game.done
-    result = game.get_game_result()
-    assert result.draw is True 
+    result = game.get_agent_scores()
+    assert isinstance(result, dict)
+    assert result[0] == result[1]

@@ -4,7 +4,7 @@ from collections import Counter
 import pytest
 
 from src.games.go_fish.go_fish import GoFish, Action
-from src.games.common import Card, BinaryGameResult, RANKS
+from src.games.common import Card, RANKS
 
 
 @pytest.fixture(autouse=True)
@@ -92,7 +92,6 @@ def test_game_completion_and_result():
     game.step(action)  # This should create the 13th book and end the game
 
     assert game.done
-    result = game.get_game_result()
-    assert isinstance(result, BinaryGameResult)
-    assert result.winner == 0
-    assert result.loser == 1 
+    result = game.get_agent_scores()
+    assert isinstance(result, dict)
+    assert result[0] > result[1]
