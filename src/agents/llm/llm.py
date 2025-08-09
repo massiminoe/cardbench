@@ -11,7 +11,7 @@ from openai import OpenAI as BaseOpenAI
 from src.agents.common import ActionResponseFormat, DiscreteAgent
 
 load_dotenv()
-
+logger = logging.getLogger(__name__)
 
 def _env_flag_is_true(name: str) -> bool:
     value = os.getenv(name, "").strip().lower()
@@ -23,12 +23,12 @@ if _env_flag_is_true("ENABLE_LANGFUSE"):
     try:
         from langfuse.openai import OpenAI as OpenAIClient  # type: ignore
 
-        logging.info("Using Langfuse OpenAI client.")
+        logger.info("Using Langfuse OpenAI client.")
     except ImportError:
-        logging.info("Langfuse not installed; using standard OpenAI client.")
+        logger.info("Langfuse not installed; using standard OpenAI client.")
         OpenAIClient = BaseOpenAI
 else:
-    logging.info("Langfuse disabled; using standard OpenAI client.")
+    logger.info("Langfuse disabled; using standard OpenAI client.")
     OpenAIClient = BaseOpenAI
 
 

@@ -7,6 +7,8 @@ from enum import Enum
 RANKS = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"]
 SUITS = ["C", "D", "H", "S"]
 
+logger = logging.getLogger(__name__)
+
 
 @dataclass
 class Card:
@@ -77,7 +79,7 @@ class EventLog:
     def push(self, event: str):
         self.events.append(event)
         if self.log_events:
-            logging.info(event)
+            logger.info(event)
 
     def get_events_from(self, idx: int) -> list[str]:
         return self.events[idx:]

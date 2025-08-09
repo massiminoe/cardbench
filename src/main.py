@@ -11,6 +11,13 @@ logging.basicConfig(level=logging.INFO)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
 if __name__ == "__main__":
+    # Forcefully configure logging with timestamp and clean format
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        force=True,
+    )
     # game_cls = GoFish
     game_cls = GinRummy
     agents = [RandomAgent, LLMAgent]

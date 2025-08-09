@@ -1,7 +1,11 @@
 import logging
+import datetime as dt
+import json
 
 from src.games.common import DiscreteGame, GameResult
 from src.agents.common import DiscreteAgent
+
+logger = logging.getLogger(__name__)
 
 
 def run_discrete_game(
@@ -28,6 +32,9 @@ def run_discrete_game(
     agent_error_counts = {agent_id: 0 for agent_id in agent_ids}
 
     # Play!
+    logger.info(
+        f"Playing {game.game_name} between {agent_0.get_name()} and {agent_1.get_name()}..."
+    )
     while not game.done:
         # Gather info
         current_agent = game.current_agent
