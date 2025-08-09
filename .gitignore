@@ -1,6 +1,7 @@
 # Custom
 .context
 logs/
+results/*.json
 
 # Python
 __pycache__/

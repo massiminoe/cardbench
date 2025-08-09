@@ -66,3 +66,27 @@ def run_discrete_game(
         event_log=game.event_log.events,
     )
     return game_result
+
+
+def run_and_save_discrete_game(
+    game_cls: type[DiscreteGame],
+    agents_0_cls: type[DiscreteAgent],
+    agents_1_cls: type[DiscreteAgent],
+    agent_0_kwargs: dict = {},
+    agent_1_kwargs: dict = {},
+    log_events: bool = False,
+) -> GameResult:
+    """
+    Run a discrete game and save the results.
+    """
+    # Run the game...
+    game_result = run_discrete_game(
+        game_cls, agents_0_cls, agents_1_cls, agent_0_kwargs, agent_1_kwargs, log_events
+    )
+
+    # Save the game...
+    timestamp = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
+    game_id = f"{game_cls.__name__}_{agents_0_cls.__name__}_{agents_1_cls.__name__}_{timestamp}"
+    with open(f"results/{game_id}.json", "w") as f:
+        json.dump(game_result.__dict__, f)
+    return game_result
