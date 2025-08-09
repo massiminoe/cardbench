@@ -1,15 +1,38 @@
 import json
 from typing import Any
 import os
+import logging
 
 from dotenv import load_dotenv
-from langfuse.openai import OpenAI
+
+# Always available base client (declared dependency)
+from openai import OpenAI as BaseOpenAI
 
 from src.agents.common import ActionResponseFormat, DiscreteAgent
 
 load_dotenv()
 
-CLIENT = OpenAI(
+
+def _env_flag_is_true(name: str) -> bool:
+    value = os.getenv(name, "").strip().lower()
+    return value in {"1", "true", "yes", "on"}
+
+
+# Decide which OpenAI client to use based on a simple env flag and availability
+if _env_flag_is_true("ENABLE_LANGFUSE"):
+    try:
+        from langfuse.openai import OpenAI as OpenAIClient  # type: ignore
+
+        logging.info("Using Langfuse OpenAI client.")
+    except ImportError:
+        logging.info("Langfuse not installed; using standard OpenAI client.")
+        OpenAIClient = BaseOpenAI
+else:
+    logging.info("Langfuse disabled; using standard OpenAI client.")
+    OpenAIClient = BaseOpenAI
+
+
+CLIENT = OpenAIClient(
     base_url="https://openrouter.ai/api/v1",
     api_key=os.getenv("OPENROUTER_API_KEY"),
 )
