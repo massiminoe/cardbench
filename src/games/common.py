@@ -42,6 +42,9 @@ class Deck:
     def deal(self, num_cards: int):
         return [self.cards.pop() for _ in range(num_cards)]
 
+    def deal_with_replacement(self, num_cards: int):
+        return random.choices(self.cards, k=num_cards)
+
     def __len__(self):
 
         return len(self.cards)
