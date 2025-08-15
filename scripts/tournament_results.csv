@@ -1,0 +1,13 @@
+Rank,Agent,ELO,CI_Low,CI_High,Games,Wins,Losses,Draws,Win_Percentage,Error_Percentage
+1,LLMAgent_x-ai/grok-3-mini,1743.0,1652.0,1782.0,33,29,4,0,87.9,0.0
+2,LLMAgent_openai/gpt-5-mini,1679.0,1606.0,1743.0,32,26,6,0,81.2,0.0
+3,LLMAgent_openai/gpt-4.1-mini,1673.0,1614.0,1754.0,33,27,6,0,81.8,0.0
+4,LLMAgent_openai/gpt-5-nano,1649.0,1565.0,1689.0,33,24,9,0,72.7,0.0
+5,LLMAgent_google/gemini-2.5-flash-lite,1572.0,1514.0,1648.0,34,22,12,0,64.7,14.7
+6,LLMAgent_google/gemma-3-27b-it,1554.0,1468.0,1602.0,34,19,15,0,55.9,0.0
+7,LLMAgent_openai/gpt-4.1-nano,1538.0,1469.0,1598.0,32,18,14,0,56.2,6.2
+8,LLMAgent_openai/gpt-4o-mini,1468.0,1407.0,1548.0,33,15,18,0,45.5,0.0
+9,RandomAgent,1361.0,1319.0,1443.0,35,10,25,0,28.6,0.0
+10,LLMAgent_openai/gpt-oss-120b,1270.0,1224.0,1337.0,33,4,29,0,12.1,84.8
+11,LLMAgent_anthropic/claude-3.5-haiku-20241022,1267.0,1208.0,1320.0,33,3,30,0,9.1,90.9
+12,LLMAgent_openai/gpt-oss-20b,1225.0,1188.0,1301.0,33,2,31,0,6.1,93.9
