@@ -1,11 +1,15 @@
 import logging
 import datetime as dt
 import json
+import os
 
 from src.games.common import DiscreteGame, GameResult
 from src.agents.common import DiscreteAgent
 
 logger = logging.getLogger(__name__)
+
+MAX_ERROR_COUNT = 3
+MAX_TURN_COUNT = 50
 
 
 def run_discrete_game(
@@ -35,7 +39,20 @@ def run_discrete_game(
     logger.info(
         f"Playing {game.game_name} between {agent_0.get_name()} and {agent_1.get_name()}..."
     )
+    turn_count = 0
     while not game.done:
+        turn_count += 1
+        if turn_count >= MAX_TURN_COUNT * game.num_agents:
+            logger.info(f"Game ended in draw after reaching max turn count ({MAX_TURN_COUNT})")
+            return GameResult(
+                agent_0_name=agent_0.get_name(),
+                agent_1_name=agent_1.get_name(),
+                agent_0_score=0.5,
+                agent_1_score=0.5,
+                event_log=game.event_log.events,
+                details=f"Game ended in draw after reaching max turn count ({MAX_TURN_COUNT})",
+            )
+
         # Gather info
         current_agent = game.current_agent
         new_events = game.event_log.get_events_from(agent_event_idxs[current_agent])
@@ -50,22 +67,40 @@ def run_discrete_game(
                 raise ValueError(f"Invalid action: {action}")
         except Exception as e:
             agent_error_counts[current_agent] += 1
+
+            # This agent loses
+            if agent_error_counts[current_agent] > MAX_ERROR_COUNT:
+                if current_agent == 0:
+                    agent_0_score = 0
+                else:
+                    agent_0_score = 1
+                agent_1_score = 1 - agent_0_score
+                return GameResult(
+                    agent_0_name=agent_0.get_name(),
+                    agent_1_name=agent_1.get_name(),
+                    agent_0_score=agent_0_score,
+                    agent_1_score=agent_1_score,
+                    event_log=game.event_log.events,
+                    details=f"Agent {current_agent} reached max error count ({MAX_ERROR_COUNT})",
+                )
+
+            # Return first action
             action = agent_actions[0]
-            logging.exception(f"Agent {current_agent} error: {e}")
+            logger.debug(f"Agent {current_agent} error: {e}")
 
         # Step
         game.step(action)
 
     # Game over
     agent_scores = game.get_agent_scores()
-    game_result = GameResult(
+    return GameResult(
         agent_0_name=agent_0.get_name(),
         agent_1_name=agent_1.get_name(),
         agent_0_score=agent_scores[0],
         agent_1_score=agent_scores[1],
         event_log=game.event_log.events,
+        details=f"Game ended after {turn_count} turns",
     )
-    return game_result
 
 
 def run_and_save_discrete_game(
@@ -75,6 +110,7 @@ def run_and_save_discrete_game(
     agent_0_kwargs: dict = {},
     agent_1_kwargs: dict = {},
     log_events: bool = False,
+    results_dir: str = "./results",
 ) -> GameResult:
     """
     Run a discrete game and save the results.
@@ -87,6 +123,7 @@ def run_and_save_discrete_game(
     # Save the game...
     timestamp = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
     game_id = f"{game_cls.__name__}_{agents_0_cls.__name__}_{agents_1_cls.__name__}_{timestamp}"
-    with open(f"results/{game_id}.json", "w") as f:
+    os.makedirs(results_dir, exist_ok=True)
+    with open(f"{results_dir}/{game_id}.json", "w") as f:
         json.dump(game_result.__dict__, f)
     return game_result

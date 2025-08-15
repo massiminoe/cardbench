@@ -13,6 +13,7 @@ from src.agents.common import ActionResponseFormat, DiscreteAgent
 load_dotenv()
 logger = logging.getLogger(__name__)
 
+
 def _env_flag_is_true(name: str) -> bool:
     value = os.getenv(name, "").strip().lower()
     return value in {"1", "true", "yes", "on"}
@@ -83,7 +84,7 @@ class LLMAgent(DiscreteAgent):
                 content = "\n".join(content.split("\n")[:-1])
         return content.strip()
 
-    def invoke_llm(self, user_prompt: str) -> ActionResponseFormat:
+    def invoke_llm(self, user_prompt: str) -> str:
         self.messages.append({"role": "user", "content": user_prompt})
         response = CLIENT.chat.completions.create(
             model=self.model_id,
@@ -93,10 +94,24 @@ class LLMAgent(DiscreteAgent):
         response_message = response.choices[0].message
         self.messages.append(response_message)
         raw_content = response_message.content
-        cleaned_content = self._clean_json(raw_content)
-        return ActionResponseFormat(**json.loads(cleaned_content))
+        return raw_content
+
+    def parse_action_response(self, raw_content: str) -> ActionResponseFormat:
+        try:
+            cleaned_content = self._clean_json(raw_content)
+            return ActionResponseFormat(**json.loads(cleaned_content))
+        except Exception as e:
+            logger.debug(f"Error parsing LLM response: {raw_content}")
+            raise ValueError(f"Error parsing LLM response: {raw_content}")
 
     def get_action(self, new_events: list[str], state: dict, actions: list[Any]) -> Any:
         user_prompt = self.build_user_prompt(new_events, state, actions)
-        response = self.invoke_llm(user_prompt)
+        raw_content = self.invoke_llm(user_prompt)
+        response = self.parse_action_response(raw_content)
+        if (
+            not isinstance(response.action_index, int)
+            or response.action_index < 0
+            or response.action_index >= len(actions)
+        ):
+            raise ValueError(f"Invalid action index: {response.action_index}")
         return actions[response.action_index]

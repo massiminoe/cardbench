@@ -1,3 +1,4 @@
 openai
 pytest
 python-dotenv
+tqdm

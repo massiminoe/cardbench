@@ -68,6 +68,7 @@ class GameResult:
     agent_0_score: float
     agent_1_score: float
     event_log: list[str]
+    details: str | None = None
 
 
 class EventLog:
